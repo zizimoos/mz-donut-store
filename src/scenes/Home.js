@@ -3,6 +3,7 @@ import Web3 from "web3";
 import styled from "styled-components";
 
 import HomeMarket from "../components/HomeMarket";
+import MzDonutStoreContract from "../contract/ContractApi";
 
 const Container = styled.div`
   width: 600px;
@@ -28,6 +29,7 @@ function Home(props) {
   const [web3, setWeb3] = useState(null);
   const [userAccount, setUserAccount] = useState();
   const [userEthBalance, setUserEthBalance] = useState();
+  const [contractApi, setContractApi] = useState(null);
 
   async function walletHandler() {
     try {
@@ -36,6 +38,7 @@ function Home(props) {
         setShowAccount(true);
         await getUserAccountInfo();
         setMessage("");
+        makeContractApi();
       } else {
         setMessage("Please install MetaMask");
       }
@@ -48,6 +51,10 @@ function Home(props) {
     setUserAccount(accounts[0]);
     const balance = await web3.eth.getBalance(accounts[0]);
     setUserEthBalance(balance);
+  }
+  async function makeContractApi() {
+    const mzd = await MzDonutStoreContract(web3);
+    setContractApi(mzd);
   }
 
   useEffect(() => {
@@ -74,6 +81,8 @@ function Home(props) {
         web3={web3}
         userAccount={userAccount}
         userEthBalance={userEthBalance}
+        contractApi={contractApi}
+        walletHandler={walletHandler}
       />
       <Section>{message}</Section>
     </Container>
