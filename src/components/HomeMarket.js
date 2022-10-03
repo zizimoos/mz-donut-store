@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
+import RestockDonuts from "./RestockDonuts";
+
 const Container = styled.div`
   width: 600px;
   margin: 0 auto;
@@ -22,6 +24,8 @@ function HomeMarket({
   userAccount,
   userEthBalance,
   contractApi,
+  apiAddress,
+  apiEthBalance,
   walletHandler,
 }) {
   const [inventroy, setInventory] = useState("");
@@ -29,6 +33,8 @@ function HomeMarket({
   const [amountBuy, setAmountBuy] = useState("0");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [owner, setOwner] = useState("");
+  const [ownerEthBalance, setOwnerEthBalance] = useState();
 
   useEffect(() => {
     try {
@@ -43,6 +49,11 @@ function HomeMarket({
   async function getInventory() {
     const inventory = await contractApi.methods.getMachineDonutBalance().call();
     setInventory(inventory);
+    const owner = await contractApi.methods.owner().call();
+    setOwner(owner);
+    console.log(owner);
+    const balance = await web3.eth.getBalance(owner);
+    setOwnerEthBalance(balance);
   }
   async function getUserInventory(_address) {
     const inventory = await contractApi.methods
@@ -72,7 +83,7 @@ function HomeMarket({
 
       walletHandler()
         .then(setLoading(false))
-        .then(setMessage(`${amountBuy} donuts ENJOY!!`));
+        .then(setMessage(`You've got ${amountBuy} donuts, ENJOY!!`));
       if (contractApi) getInventory();
       if (contractApi && userAccount) getUserInventory(userAccount);
     } catch (err) {
@@ -84,8 +95,12 @@ function HomeMarket({
     <Container>
       <Section>userAccount : {userAccount}</Section>
       <Section>userEthBalance : {userEthBalance}</Section>
-      <Section>storeDonutBalance : {inventroy}</Section>
       <Section>userDonutBalance : {userDounts}</Section>
+      <Section>storeAddress : {apiAddress}</Section>
+      <Section>storeEthBalance : {apiEthBalance}</Section>
+      <Section>storeDonutBalance : {inventroy}</Section>
+      <Section>owner :{owner}</Section>
+      <Section>owner EthBalance :{ownerEthBalance}</Section>
       {loading ? (
         <Section>구매 진행중입니다. 컨펌해 주시고 잠시만 기다려주세요.</Section>
       ) : null}
@@ -102,6 +117,12 @@ function HomeMarket({
         ></input>
         <button onClick={buyDountsHandler}>BUY</button>
       </SectionBuy>
+      <RestockDonuts
+        contractApi={contractApi}
+        walletHandler={walletHandler}
+        userAccount={userAccount}
+        owner={owner}
+      ></RestockDonuts>
     </Container>
   );
 }

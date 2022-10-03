@@ -3,7 +3,7 @@ import Web3 from "web3";
 import styled from "styled-components";
 
 import HomeMarket from "../components/HomeMarket";
-import MzDonutStoreContract from "../contract/ContractApi";
+import { MzDonutStoreContract, contractAddress } from "../contract/ContractApi";
 
 const Container = styled.div`
   width: 600px;
@@ -30,6 +30,8 @@ function Home(props) {
   const [userAccount, setUserAccount] = useState();
   const [userEthBalance, setUserEthBalance] = useState();
   const [contractApi, setContractApi] = useState(null);
+  const [apiAddress, setApiAddress] = useState();
+  const [apiEthBalance, setApiEthBalance] = useState();
 
   async function walletHandler() {
     try {
@@ -55,6 +57,9 @@ function Home(props) {
   async function makeContractApi() {
     const mzd = await MzDonutStoreContract(web3);
     setContractApi(mzd);
+    setApiAddress(contractAddress);
+    const balance = await web3.eth.getBalance(contractAddress);
+    setApiEthBalance(balance);
   }
 
   useEffect(() => {
@@ -82,6 +87,8 @@ function Home(props) {
         userAccount={userAccount}
         userEthBalance={userEthBalance}
         contractApi={contractApi}
+        apiAddress={apiAddress}
+        apiEthBalance={apiEthBalance}
         walletHandler={walletHandler}
       />
       <Section>{message}</Section>

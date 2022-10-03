@@ -135,11 +135,8 @@ const abi = [
   },
 ];
 
-const MzDonutStoreContract = (web3) => {
-  return new web3.eth.Contract(
-    abi,
-    "0xdaf7c597a4F6470F222D25f7Ce08AC9C41330e5d"
-  );
-};
+export const contractAddress = "0xdaf7c597a4F6470F222D25f7Ce08AC9C41330e5d";
 
-export default MzDonutStoreContract;
+export const MzDonutStoreContract = (web3) => {
+  return new web3.eth.Contract(abi, contractAddress);
+};
